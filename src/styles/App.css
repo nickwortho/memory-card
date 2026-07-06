@@ -1,0 +1,49 @@
+:root {
+    --background-color: rgb(25, 65, 75);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+
+    background-color: var(--background-color);
+}
+
+main {
+    margin: 1rem;
+    padding: 1rem;
+    width: 600px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background-color: lightgrey;
+}
+
+.cardGrid {
+    width: 80%;
+    aspect-ratio: 1;
+
+    padding: 5px;
+
+    display: grid;
+    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+    gap: 1rem 1rem;
+
+    border: 1px solid grey;
+}
+
+.cardGrid div {
+    background-color: white;
+}
