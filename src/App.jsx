@@ -44,8 +44,6 @@ function App() {
       });
       setApiFetchCount(apiFetchCount + 1);
       pokemonCache.current.push(apiFetchUrl);
-      console.log(pokemonList);
-      console.log(pokemonCache);
     } catch (error) {
       console.log('ERROR');
     }
@@ -75,11 +73,19 @@ function App() {
         return newSelecteds;
       });
     }
+    shuffleCards();
   }
 
-  // function shuffleCards() {
+  function shuffleCards() {
+    setPokemonList(prevList => {
+      const newList = [...prevList];
 
-  // }
+      newList.sort(() => Math.random() - 0.5);
+      console.log(prevList);
+      console.log(newList);
+      return newList;
+    })
+  }
 
   return (
     <main>
