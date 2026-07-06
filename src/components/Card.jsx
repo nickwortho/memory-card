@@ -1,7 +1,7 @@
-function Card({ pokemon = { name: "loading...", image: "loading..." } }) {
+function Card({ pokemon = { name: "loading...", image: "loading..." }, handleClick }) {
 
     return (
-        <div>
+        <div id={pokemon.name} onClick={handleClick}>
             <p>{pokemon.name}</p>
             <img src={pokemon.image} alt={pokemon.image} />
         </div>

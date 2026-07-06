@@ -16,8 +16,11 @@ function App() {
   const [apiFetchCount, setApiFetchCount] = useState(0);
   // when a url is fetched, add it to cache to prevent repeated fetches on rerendering
   const pokemonCache = useRef([]);
-
   let apiFetchUrl = `https://pokeapi.co/api/v2/pokemon/${apiFetchCount + 1}/`
+
+
+  const [selectedPokemon, setSelectedPokemon] = useState([]);
+  const [score, setScore] = useState(0);
 
   console.log(pokemonList);
 
@@ -52,15 +55,42 @@ function App() {
     if (apiFetchCount < 9) getCardImages();
   }, [apiFetchCount]);
 
+  function handleClick(e) {
+    const currentSelection = e.currentTarget.id;
+    console.log(`${currentSelection} clicked!`)
+    if (selectedPokemon.includes(currentSelection)) {
+      // already selected this pokemon
+      setScore(0);
+
+      setSelectedPokemon([]);
+    } else {
+      // selected new pokemon
+      setScore(score + 1);
+
+      setSelectedPokemon(prevSelecteds => {
+        const newSelecteds = [...prevSelecteds];
+
+        newSelecteds.push(currentSelection);
+
+        return newSelecteds;
+      });
+    }
+  }
+
+  // function shuffleCards() {
+
+  // }
+
   return (
     <main>
       <header>
         <h1>Memory Card</h1>
+        <p>Score: {score}</p>
       </header>
       <div className="cardGrid">
         {pokemonList.map((pokemonData) => {
           return (
-            <Card key={pokemonData.id} pokemon={pokemonData} />
+            <Card key={pokemonData.id} pokemon={pokemonData} handleClick={handleClick} />
           );
         })}
       </div>
