@@ -1,5 +1,7 @@
 :root {
     --background-color: rgb(25, 65, 75);
+    --secondary-color: rgb(48, 114, 131);
+    font-family: 'Courier New', Courier, monospace;
 }
 
 *,
@@ -10,6 +12,11 @@
 
 * {
     margin: 0;
+}
+
+h1,
+p {
+    color: white;
 }
 
 body {
@@ -28,7 +35,15 @@ main {
     flex-direction: column;
     align-items: center;
 
-    background-color: lightgrey;
+    border-radius: 20px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+    background-color: var(--secondary-color);
+}
+
+main header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .cardGrid {
@@ -40,10 +55,26 @@ main {
     display: grid;
     grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
     gap: 1rem 1rem;
-
-    border: 1px solid grey;
 }
 
 .cardGrid div {
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    border: 2px solid grey;
+    border-radius: 5px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     background-color: white;
+}
+
+.cardGrid div:hover {
+    outline: auto;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 1);
+}
+
+.cardGrid p {
+    color: black;
 }

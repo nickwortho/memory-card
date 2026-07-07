@@ -1,65 +1,46 @@
-import { useEffect, useState, useRef } from 'react'
+import { useState } from 'react'
 import './styles/App.css'
 import Card from './components/Card.jsx'
+import getPokemon from './pokemon.js';
 
 function App() {
+  const pokemonListSize = 20;
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // State
   const [loading, setLoading] = useState(true);
-  const [pokemonList, setPokemonList] = useState(
-    Array.from({ length: 9 }, () => (
-      {
-        id: crypto.randomUUID(),
-        name: "loading name...",
-        image: "loading img..."
-      }
-    ))
-  );
-  const [apiFetchCount, setApiFetchCount] = useState(0);
-  // when a url is fetched, add it to cache to prevent repeated fetches on rerendering
-  const pokemonCache = useRef([]);
-  let apiFetchUrl = `https://pokeapi.co/api/v2/pokemon/${apiFetchCount + 1}/`
 
+  const [pokemonList, setPokemonList] = useState(null); // all fetched pokemon
+  const [displayedPokemon, setDisplayedPokemon] = useState(null); // currently displayed pokemon
+  const [selectedPokemon, setSelectedPokemon] = useState([]); // pokemon already selected this round
 
-  const [selectedPokemon, setSelectedPokemon] = useState([]);
   const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
 
-  console.log(pokemonList);
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Functions
 
-  async function getCardImages() {
-    if (pokemonCache.current.includes(apiFetchUrl)) {
+  // Shuffles pokemon cards displayed in UI
+  function shuffleCards() {
+    if (!pokemonList) {
+      console.log('ERROR: Pokemon list has not initialised.');
       return;
     }
-    try {
-      let response = await fetch(apiFetchUrl);
-      const pokemon = await response.json();
-      setPokemonList(prevList => {
-        const newList = [...prevList];
-
-        newList[apiFetchCount] = {
-          id: pokemon.name,
-          name: pokemon.name,
-          image: pokemon.sprites.front_default
-        }
-
-        return newList;
-      });
-      setApiFetchCount(apiFetchCount + 1);
-      pokemonCache.current.push(apiFetchUrl);
-    } catch (error) {
-      console.log('ERROR');
-    }
+    const shuffledPokemonList = [...pokemonList].sort(() => Math.random() - 0.5);
+    const newDisplayedPokemon = shuffledPokemonList.slice(0, 9);
+    setDisplayedPokemon(newDisplayedPokemon);
   }
 
-  useEffect(() => {
-    if (apiFetchCount < 9) getCardImages();
-  }, [apiFetchCount]);
-
+  // Handles UI selection of a pokemon card
   function handleClick(e) {
     const currentSelection = e.currentTarget.id;
-    console.log(`${currentSelection} clicked!`)
     if (selectedPokemon.includes(currentSelection)) {
       // already selected this pokemon
-      setScore(0);
+      if (score > highScore) {
+        setHighScore(score);
+      }
 
+      setScore(0);
       setSelectedPokemon([]);
     } else {
       // selected new pokemon
@@ -76,32 +57,67 @@ function App() {
     shuffleCards();
   }
 
-  function shuffleCards() {
-    setPokemonList(prevList => {
-      const newList = [...prevList];
+  // Fills initial pokemon list with data fetched from pokeapi.co
+  async function fillPokemonList() {
+    try {
+      if (!pokemonList) {
+        const pokemon = await getPokemon(pokemonListSize);
+        setPokemonList(pokemon);
 
-      newList.sort(() => Math.random() - 0.5);
-      console.log(prevList);
-      console.log(newList);
-      return newList;
-    })
+        // initial setting of displayed pokemon from shuffled fetched pokemon
+        const shuffledPokemonList = [...pokemon].sort(() => Math.random() - 0.5);
+        const newDisplayedPokemon = shuffledPokemonList.slice(0, 9);
+        setDisplayedPokemon(newDisplayedPokemon);
+
+        console.log("Loading finished.");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error(`Failed to fill pokemon list: `, error.message);
+    }
   }
 
-  return (
-    <main>
-      <header>
-        <h1>Memory Card</h1>
-        <p>Score: {score}</p>
-      </header>
-      <div className="cardGrid">
-        {pokemonList.map((pokemonData) => {
-          return (
-            <Card key={pokemonData.id} pokemon={pokemonData} handleClick={handleClick} />
-          );
-        })}
-      </div>
-    </main>
-  )
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Rendering
 
+  if (!pokemonList) {
+    fillPokemonList();
+  }
+
+  if (loading) {
+    return (
+      <main>
+        <header>
+          <h1>Memory Card</h1>
+          <p>Score: {score} - High Score: {highScore}</p>
+        </header>
+        <div className="cardGrid">
+          <p>Loading...</p>
+        </div>
+      </main>
+    )
+  } else {
+    return (
+      <main>
+        <header>
+          <h1>Memory Card</h1>
+          <p>Score: {score} - High Score: {highScore}</p>
+        </header>
+        <div className="cardGrid">
+          <Card pokemon={displayedPokemon[0]} handleClick={handleClick} />
+          <Card pokemon={displayedPokemon[1]} handleClick={handleClick} />
+          <Card pokemon={displayedPokemon[2]} handleClick={handleClick} />
+          <Card pokemon={displayedPokemon[3]} handleClick={handleClick} />
+          <Card pokemon={displayedPokemon[4]} handleClick={handleClick} />
+          <Card pokemon={displayedPokemon[5]} handleClick={handleClick} />
+          <Card pokemon={displayedPokemon[6]} handleClick={handleClick} />
+          <Card pokemon={displayedPokemon[7]} handleClick={handleClick} />
+          <Card pokemon={displayedPokemon[8]} handleClick={handleClick} />
+        </div>
+        <p>Total pool of pokemon: {pokemonListSize}</p>
+      </main>
+    )
+  }
 }
+
 export default App;
