@@ -4,7 +4,7 @@ import Card from './components/Card.jsx'
 import getPokemon from './pokemon.js';
 
 function App() {
-  const pokemonListSize = 20;
+  const pokemonListSize = 9;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // State
